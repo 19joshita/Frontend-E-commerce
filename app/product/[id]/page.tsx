@@ -5,7 +5,7 @@ import AddToCartClient from "../../components/cart/AddToCart";
 
 type Props = { params: { id: string } };
 
-// Optional: generate static paths
+// Optional: generate static paths for pre-rendering
 export async function generateStaticParams() {
   const res = await fetch("https://fakestoreapi.com/products");
   const products = await res.json();
@@ -13,14 +13,15 @@ export async function generateStaticParams() {
 }
 
 export default async function ProductPage({ params }: Props) {
-  console.log(params);
-  const { id } = params;
+  const { id } = params; // dynamic id from URL
 
   try {
-    const res = await fetch(`https://fakestoreapi.com/products/1`, {
-      cache: "no-store",
+    // ✅ Use the dynamic id here
+    const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
+      cache: "no-store", // always fetch fresh data
     });
-    if (!res.ok) notFound();
+
+    if (!res.ok) notFound(); // trigger 404 if product not found
     const product = await res.json();
 
     return (
@@ -44,7 +45,7 @@ export default async function ProductPage({ params }: Props) {
         </div>
       </div>
     );
-  } catch {
+  } catch (error) {
     notFound();
   }
 }
