@@ -1,12 +1,20 @@
+import path from "path";
+
 const nextConfig = {
-  images: {
-    domains: ["fakestoreapi.com"],
-  },
   reactStrictMode: true,
-  experimental: {
-    appDir: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "fakestoreapi.com",
+        pathname: "/**",
+      },
+    ],
   },
-  
+  turbopack: {
+    // Use absolute path
+    root: path.resolve(__dirname),
+  },
 };
 
 export default nextConfig;
