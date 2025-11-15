@@ -12,9 +12,9 @@ const nextConfig = {
     ],
   },
   turbopack: {
-    // Use absolute path
-    root: path.resolve(__dirname),
+    root: path.resolve(__dirname), // absolute path
   },
+  productionBrowserSourceMaps: false, // prevent invalid source map errors
 };
 
 export default nextConfig;
