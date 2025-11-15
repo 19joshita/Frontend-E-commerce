@@ -11,7 +11,13 @@ const nextConfig = {
       },
     ],
   },
-  productionBrowserSourceMaps: false, // prevents source map crashes
+  productionBrowserSourceMaps: false, // prevents source map errors
+  experimental: {}, // remove appDir or turbopack keys
+  webpack: (config: any) => {
+    // Ensure Turbopack is not used
+    config.resolve.fallback = { ...config.resolve.fallback, fs: false };
+    return config;
+  },
 };
 
 export default nextConfig;
