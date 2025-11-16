@@ -1,17 +1,36 @@
-import { formatCurrency } from "../../utils/formatCurrency";
-import Image from "next/image";
+// app/product/[id]/page.tsx
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import AddToCartClient from "../../components/cart/AddToCart";
+import { formatCurrency } from "../../utils/formatCurrency";
+import { Metadata } from "next";
 
 type Props = { params: { id: string } };
 
-// Optional: generate static paths for pre-rendering
-export async function generateMetadata({ params }: Props) {
+type Product = {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  image: string;
+};
+
+// Pre-generate product IDs for static routes
+export async function generateStaticParams() {
+  const res = await fetch("https://fakestoreapi.com/products");
+  if (!res.ok) throw new Error("Failed to fetch products");
+
+  const products: Product[] = await res.json();
+  return products.map((product) => ({ id: product.id.toString() }));
+}
+
+// Optional: Metadata generation
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await Promise.resolve(params);
   const id = resolvedParams.id;
   try {
     const res = await fetch(`https://fakestoreapi.com/products/${id}`);
-    const product = await res.json();
+    const product: Product = await res.json();
     return {
       title: product.title,
       description: product.description,
@@ -20,18 +39,19 @@ export async function generateMetadata({ params }: Props) {
     return { title: "Product" };
   }
 }
+
+// Page Component
 export default async function ProductPage({ params }: Props) {
   const resolvedParams = await Promise.resolve(params);
   const id = resolvedParams.id;
 
   try {
-    // ✅ Use the dynamic id here
     const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
-      cache: "no-store",
+      cache: "no-store", // fetch fresh data on every request
     });
 
     if (!res.ok) notFound();
-    const product = await res.json();
+    const product: Product = await res.json();
 
     return (
       <div className="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
