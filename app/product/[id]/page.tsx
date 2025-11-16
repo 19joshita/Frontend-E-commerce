@@ -7,9 +7,10 @@ type Props = { params: { id: string } };
 
 // Optional: generate static paths for pre-rendering
 export async function generateStaticParams() {
-  const res = await fetch("https://fakestoreapi.com/products");
+  const res = await fetch("https://fakestoreapi.com/products"); // Use full URL
+  if (!res.ok) throw new Error("Failed to fetch products");
   const products = await res.json();
-  return products.map((product: any) => ({ id: product.id.toString() }));
+  return products.map((p: any) => ({ id: products.id }));
 }
 
 export default async function ProductPage({ params }: Props) {
