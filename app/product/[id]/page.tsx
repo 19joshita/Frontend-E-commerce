@@ -1,72 +1,39 @@
-// app/product/[id]/page.tsx
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import AddToCartClient from "../../components/cart/AddToCart";
-import { formatCurrency } from "../../utils/formatCurrency";
+// import { useCart } from "../../../components/cart/CartContext";
 
 type Props = { params: { id: string } };
 
-type Product = {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  image: string;
-};
-
-export async function generateStaticParams() {
-  try {
-    const res = await fetch("https://fakestoreapi.com/products");
-    if (!res.ok) return [];
-    const products: Product[] = await res.json();
-    return products.map((p) => ({ id: p.id.toString() }));
-  } catch {
-    return []; // fallback to avoid build crash
-  }
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+  const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+  const product = await res.json();
+  if (!product) return {};
+  return {
+    title: product.title,
+    description: product.description,
+  };
 }
 
-async function getProduct(id: string) {
-  try {
-    const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
-      cache: "no-store", // SSR: always fetch fresh data
-    });
-    if (!res.ok) return null;
-    return res.json() as Promise<Product>;
-  } catch {
-    return null;
-  }
-}
+export default async function ProductPage({ params }: Props) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+  const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+  const product = await res.json();
 
-// ------------------------------
-// Page Component
-// ------------------------------
-export default async function ProductPage(rawProps: Props) {
-  // Resolve params in case it is a Promise
-  const props: Props = await Promise.resolve(rawProps);
-  const { id } = props.params;
-
-  const product = await getProduct(id);
-
-  if (!product) return notFound();
+  if (!product) notFound();
 
   return (
-    <div className="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="w-full h-96 relative border rounded-md bg-white p-4">
-        <Image
-          src={product.image}
-          alt={product.title}
-          fill
-          style={{ objectFit: "contain" }}
-          loading="lazy"
-        />
-      </div>
+    <div className="p-8 flex flex-col md:flex-row gap-8">
+      <img src={product.image} alt={product.title} className="h-80" />
       <div>
-        <h1 className="text-2xl font-bold">{product.title}</h1>
-        <p className="mt-3 text-sm text-gray-700">{product.description}</p>
-        <p className="mt-4 text-xl font-semibold">
-          {formatCurrency(product.price)}
-        </p>
-        <AddToCartClient product={product} />
+        <h1 className="text-3xl font-bold">{product.title}</h1>
+        <p className="mt-2">{product.description}</p>
+        <p className="mt-2 font-bold">${product.price}</p>
+        <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          Add to Cart
+        </button>
       </div>
     </div>
   );
