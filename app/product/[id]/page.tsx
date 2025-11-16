@@ -17,11 +17,23 @@ type Product = {
 
 // Pre-generate product IDs for static routes
 export async function generateStaticParams() {
-  const res = await fetch("https://fakestoreapi.com/products");
-  if (!res.ok) throw new Error("Failed to fetch products");
+  try {
+    const res = await fetch("https://fakestoreapi.com/products");
 
-  const products: Product[] = await res.json();
-  return products.map((product) => ({ id: product.id.toString() }));
+    // Check if fetch succeeded
+    if (!res.ok) {
+      console.error("Failed to fetch products. Status:", res.status);
+      return []; 
+    }
+
+    const products: Product[] = await res.json();
+
+    // Map products to { id } for static params
+    return products.map((product) => ({ id: product.id.toString() }));
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    return []; // Avoid breaking the build
+  }
 }
 
 // Optional: Metadata generation
