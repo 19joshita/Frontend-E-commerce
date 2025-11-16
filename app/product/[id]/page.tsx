@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 
 type Props = { params: { id: string } };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const resolvedParams = await params;
+export async function generateMetadata({ params }: Props) {
+  const resolvedParams = await Promise.resolve(params);
   const id = resolvedParams.id;
   const res = await fetch(`https://fakestoreapi.com/products/${id}`);
   const product = await res.json();
@@ -17,8 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const resolvedParams = await params;
+  const resolvedParams = await Promise.resolve(params);
   const id = resolvedParams.id;
+
   const res = await fetch(`https://fakestoreapi.com/products/${id}`);
   const product = await res.json();
 
