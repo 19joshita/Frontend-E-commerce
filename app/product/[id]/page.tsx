@@ -2,12 +2,11 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import AddToCartClient from "../../components/cart/AddToCart";
-import { Metadata } from "next";
 
 type Props = { params: { id: string } };
 
 // Optional: generate static paths for pre-rendering
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props) {
   const resolvedParams = await Promise.resolve(params);
   const id = resolvedParams.id;
   try {
