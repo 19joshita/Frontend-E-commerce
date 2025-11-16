@@ -13,15 +13,16 @@ export async function generateStaticParams() {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { id } = params; // dynamic id from URL
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams.id;
 
   try {
     // ✅ Use the dynamic id here
     const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
-      cache: "no-store", // always fetch fresh data
+      cache: "no-store",
     });
 
-    if (!res.ok) notFound(); // trigger 404 if product not found
+    if (!res.ok) notFound();
     const product = await res.json();
 
     return (

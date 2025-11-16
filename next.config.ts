@@ -1,5 +1,4 @@
-import path from "path";
-
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -11,13 +10,8 @@ const nextConfig = {
       },
     ],
   },
-  productionBrowserSourceMaps: false, // prevents source map errors
-  experimental: {}, // remove appDir or turbopack keys
-  webpack: (config: any) => {
-    // Ensure Turbopack is not used
-    config.resolve.fallback = { ...config.resolve.fallback, fs: false };
-    return config;
-  },
+  productionBrowserSourceMaps: false,
+  turbopack: {}, // use Turbopack
 };
 
 export default nextConfig;
