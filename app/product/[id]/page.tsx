@@ -2,17 +2,25 @@ import { formatCurrency } from "../../utils/formatCurrency";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import AddToCartClient from "../../components/cart/AddToCart";
+import { Metadata } from "next";
 
 type Props = { params: { id: string } };
 
 // Optional: generate static paths for pre-rendering
-export async function generateStaticParams() {
-  const res = await fetch("https://fakestoreapi.com/products"); // Use full URL
-  if (!res.ok) throw new Error("Failed to fetch products");
-  const products = await res.json();
-  return products.map((p: any) => ({ id: products.id }));
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams.id;
+  try {
+    const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+    const product = await res.json();
+    return {
+      title: product.title,
+      description: product.description,
+    };
+  } catch {
+    return { title: "Product" };
+  }
 }
-
 export default async function ProductPage({ params }: Props) {
   const resolvedParams = await Promise.resolve(params);
   const id = resolvedParams.id;
