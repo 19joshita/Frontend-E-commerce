@@ -24,7 +24,7 @@ export default function VirtualizedList({ items, loadMore, hasMore }: any) {
   }, [loadMore, hasMore]);
 
   return (
-    <div style={{ height: "70vh" }}>
+    <div className="h-[70vh] relative">
       <AutoSizer>
         {({ height, width }: any) => {
           const columnCount = width > 1024 ? 3 : width > 640 ? 2 : 1;
@@ -43,12 +43,13 @@ export default function VirtualizedList({ items, loadMore, hasMore }: any) {
                   <div
                     style={{
                       ...style,
-                      left: style.left + GAP / 2, // add horizontal spacing
-                      top: style.top + GAP / 2, // add vertical spacing
+                      left: style.left + GAP / 2,
+                      top: style.top + GAP / 2,
                       width: style.width - GAP,
                       height: style.height - GAP,
                     }}
                     key={key}
+                    className="p-2" // Tailwind padding for spacing
                   >
                     <ProductCard product={item} />
                   </div>
@@ -66,7 +67,7 @@ export default function VirtualizedList({ items, loadMore, hasMore }: any) {
       </AutoSizer>
 
       {/* Sentinel div for infinite scroll */}
-      <div ref={observerRef} />
+      <div ref={observerRef} className="h-1" />
     </div>
   );
 }

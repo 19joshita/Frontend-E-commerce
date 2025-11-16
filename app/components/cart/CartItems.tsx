@@ -5,24 +5,33 @@ import { removeFromCart, updateQty } from "../../redux/slices/cartSlice";
 
 export default function CartItem({ item }: any) {
   const dispatch = useDispatch();
+
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between gap-4 p-4 bg-white shadow-sm rounded-lg hover:shadow-md transition-shadow">
+      {/* Product Image */}
       <img
         src={item.image}
         alt={item.title}
-        className="w-12 h-12 object-contain"
+        className="w-16 h-16 object-contain rounded-md border border-gray-200 p-1"
       />
-      <div className="flex-1">
-        <div className="text-sm font-medium truncate">{item.title}</div>
-        <div className="text-xs">
-          {item.qty} × {item.price}
+
+      {/* Product Info */}
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-semibold text-gray-800 truncate">
+          {item.title}
+        </div>
+        <div className="text-xs text-gray-500 mt-1">
+          {item.qty} × ${item.price.toFixed(2)}
         </div>
       </div>
-      <div className="flex flex-col gap-1">
+
+      {/* Quantity Controls */}
+      <div className="flex flex-col items-center gap-1">
         <button
           onClick={() =>
             dispatch(updateQty({ id: item.id, qty: item.qty + 1 }))
           }
+          className="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition"
         >
           +
         </button>
@@ -30,16 +39,19 @@ export default function CartItem({ item }: any) {
           onClick={() =>
             dispatch(updateQty({ id: item.id, qty: Math.max(1, item.qty - 1) }))
           }
+          className="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition"
         >
           -
         </button>
-        <button
-          onClick={() => dispatch(removeFromCart(item.id))}
-          className="text-xs text-red-600"
-        >
-          Remove
-        </button>
       </div>
+
+      {/* Remove Button */}
+      <button
+        onClick={() => dispatch(removeFromCart(item.id))}
+        className="text-xs text-red-600 hover:text-red-800 font-medium transition"
+      >
+        Remove
+      </button>
     </div>
   );
 }

@@ -5,47 +5,104 @@ import { RootState } from "../../redux/store";
 import CartItem from "./CartItems";
 import { clearCart } from "../../redux/slices/cartSlice";
 import Link from "next/link";
+import {
+  Drawer,
+  Box,
+  Typography,
+  IconButton,
+  Divider,
+  Button,
+  Stack,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-export default function CartSidebar({ open, onClose }: any) {
-  const items = useSelector((s: RootState) => s.cart.items);
-  const total = useSelector((s: RootState) => s.cart.total);
+interface CartSidebarProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function CartSlider({ open, onClose }: CartSidebarProps) {
+  const items = useSelector((state: RootState) => state.cart.items);
+  const total = useSelector((state: RootState) => state.cart.total);
   const dispatch = useDispatch();
-  if (!open) return null;
+
   return (
-    <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-lg p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="font-semibold">Cart</h3>
-        <button onClick={onClose} aria-label="Close cart">
-          Close
-        </button>
-      </div>
-      <div className="space-y-3 overflow-auto" style={{ maxHeight: "60vh" }}>
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          width: { xs: "100%", sm: 400 },
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+        },
+      }}
+    >
+      {/* Header */}
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h6" component="h3">
+          Your Cart
+        </Typography>
+        <IconButton onClick={onClose}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
+
+      <Divider />
+
+      {/* Cart Items */}
+      <Box flex={1} mt={2} mb={2} sx={{ overflowY: "auto", maxHeight: "60vh" }}>
         {items.length === 0 ? (
-          <p>Your cart is empty</p>
+          <Typography textAlign="center" color="text.secondary" mt={5}>
+            Your cart is empty
+          </Typography>
         ) : (
-          items.map((it: any, index: number) => (
-            <CartItem key={index} item={it} />
-          ))
+          items.map((item) => <CartItem key={item.id} item={item} />)
         )}
-      </div>
-      <div className="mt-4">
-        <p className="font-semibold">Total: {total}</p>
-        <div className="flex gap-2 mt-3">
-          <Link
-            href="/checkout"
-            className="px-3 py-2 bg-green-600 text-white rounded"
-            onClick={onClose}
-          >
-            Checkout
+      </Box>
+
+      <Divider />
+
+      {/* Total & Actions */}
+      <Stack spacing={2} mt={2}>
+        <Box display="flex" justifyContent="space-between">
+          <Typography variant="subtitle1" fontWeight="bold">
+            Total:
+          </Typography>
+          <Typography variant="subtitle1" fontWeight="bold">
+            ${Number(total).toFixed(2)}
+          </Typography>
+        </Box>
+
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <Link href="/checkout" passHref legacyBehavior>
+            <Button
+              variant="contained"
+              color="success"
+              fullWidth
+              onClick={onClose}
+            >
+              Checkout
+            </Button>
           </Link>
-          <button
+
+          <Button
+            variant="outlined"
+            color="error"
+            fullWidth
             onClick={() => dispatch(clearCart())}
-            className="px-3 py-2 border rounded"
           >
             Clear
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </Stack>
+      </Stack>
+    </Drawer>
   );
 }
